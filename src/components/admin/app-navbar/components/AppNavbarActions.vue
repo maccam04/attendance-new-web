@@ -1,26 +1,15 @@
 <template>
   <div class="app-navbar-actions">
-    <color-dropdown class="app-navbar-actions__item"/>
-    <message-dropdown class="app-navbar-actions__item"/>
-    <notification-dropdown class="app-navbar-actions__item"/>
-    <settings-dropdown
-      :is-top-bar.sync="isTopBarProxy"
-      class="app-navbar-actions__item"
-    />
-    <language-dropdown class="app-navbar-actions__item"/>
+
     <profile-dropdown class="app-navbar-actions__item app-navbar-actions__item--profile">
-      <span>{{userName}}</span>
+      <span>Admin</span>
     </profile-dropdown>
   </div>
 </template>
 
 <script>
-import LanguageDropdown from './dropdowns/LanguageDropdown'
+
 import ProfileDropdown from './dropdowns/ProfileDropdown'
-import NotificationDropdown from './dropdowns/NotificationDropdown'
-import MessageDropdown from './dropdowns/MessageDropdown'
-import ColorDropdown from './dropdowns/ColorDropdown'
-import SettingsDropdown from './dropdowns/SettingsDropdown'
 import { ColorThemeMixin } from '../../../../services/vuestic-ui'
 
 export default {
@@ -28,11 +17,7 @@ export default {
   mixins: [ColorThemeMixin],
   inject: ['contextConfig'],
   components: {
-    SettingsDropdown,
-    ColorDropdown,
-    MessageDropdown,
-    NotificationDropdown,
-    LanguageDropdown,
+
     ProfileDropdown,
   },
   props: {

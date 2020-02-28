@@ -16,7 +16,7 @@
     />
     <div class="app-topbar-link__title">
       <slot>
-        {{title}}
+        Admin
       </slot>
     </div>
     <va-icon

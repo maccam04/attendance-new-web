@@ -1,92 +1,92 @@
 <template>
-  <div class="markup-tables">
-    <va-card :title="$t('tables.basic')" class="mb-2">
-      <table class="va-table">
-        <thead>
-          <tr>
-            <th>{{ $t('tables.headings.name') }}</th>
-            <th>{{ $t('tables.headings.email') }}</th>
-            <th>{{ $t('tables.headings.country') }}</th>
-            <th>{{ $t('tables.headings.status') }}</th>
-          </tr>
-        </thead>
+  <va-card :title="$t('List of Professor')">
+    <va-data-table :fields="fields" :data="users" no-pagination>
+      <template slot="marker" slot-scope="props">
+        <va-icon name="fa fa-circle" :color="props.rowData.color" size="8px" />
+      </template>
 
-        <tbody>
-          <tr v-for="user in users" :key="user.id">
-            <td>{{ user.name }}</td>
-            <td>{{ user.email }}</td>
-            <td>{{ user.country }}</td>
-            <td>
-              <va-badge :color="getStatusColor(user.status)">
-                {{ user.status }}
-              </va-badge>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </va-card>
+      <template slot="actions" slot-scope="props">
+        <va-button
+          flat
+          small
+          color="gray"
+          @click="edit(props.rowData)"
+          class="ma-0"
+        >{{ $t('tables.edit') }}</va-button>
 
-    <va-card :title="$t('tables.stripedHoverable')">
-      <table class="va-table va-table--striped va-table--hoverable">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Country</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr v-for="user in users" :key="user.id">
-            <td>{{ user.name }}</td>
-            <td>{{ user.email }}</td>
-            <td>{{ user.country }}</td>
-            <td>
-              <va-badge :color="getStatusColor(user.status)">
-                {{ user.status }}
-              </va-badge>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </va-card>
-  </div>
+        <va-button
+          flat
+          small
+          color="danger"
+          @click="remove(props.rowData)"
+          class="ma-0"
+        >{{ $t('tables.delete') }}</va-button>
+      </template>
+    </va-data-table>
+  </va-card>
 </template>
 
 <script>
-import data from './data.json'
-
+import { firebaseInstance } from '../../app/store.js'
 export default {
   data () {
     return {
-      users: data.slice(0, 8),
+      users: [],
     }
   },
+
+  async mounted () {
+    await firebaseInstance.firebase
+      .firestore()
+      .collection('Users')
+      .where('type', '==', 1)
+      .onSnapshot(querySnapshot => {
+        querySnapshot.forEach(doc => {
+          console.log(doc.data())
+          this.users.push(doc.data())
+        })
+      })
+  },
+
+  computed: {
+    fields () {
+      return [
+        {
+          name: '__slot:marker',
+          width: '30px',
+          dataClass: 'text-center',
+        },
+        {
+          name: 'name',
+          title: this.$t('tables.headings.name'),
+        },
+        {
+          name: 'email',
+          title: this.$t('tables.headings.email'),
+        },
+        {
+          name: 'mobileNo',
+          title: 'Contact #',
+        },
+        {
+          name: '__slot:actions',
+          dataClass: 'text-right',
+        },
+      ]
+    },
+  },
+
   methods: {
-    getStatusColor (status) {
-      if (status === 'paid') {
-        return 'success'
-      }
-
-      if (status === 'processing') {
-        return 'info'
-      }
-
-      return 'danger'
+    edit (user) {
+      alert('Edit User: ' + JSON.stringify(user))
+    },
+    remove (user) {
+      const idx = this.users.findIndex(u => u.id === user.id)
+      this.users.splice(idx, 1)
     },
   },
 }
 </script>
 
 <style lang="scss">
-  .markup-tables {
-    .va-table {
-      width: 100%;
-    }
-
-    .va-card {
-      max-width: 1200px;
-    }
-  }
 </style>
