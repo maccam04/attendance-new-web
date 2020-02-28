@@ -3,27 +3,22 @@
     <div class="row">
       <div class="flex xs12">
         <va-card :title="$t('Add New Account (Student)')">
-          <form @submit.prevent="registerStudent" >
+          <form @submit.prevent="registerStudent">
             <div class="row">
               <div class="flex md6 xs12">
-                <va-input
-                  v-model="name"
-                  type="studentEmail"
-                  placeholder="Full Name"
-                  :label="Name"
-                />
+                <va-input v-model="studentName" type="studentName" placeholder="Full Name" />
               </div>
 
               <div class="flex md6 xs12">
-                <va-input v-model="email" type="studentEmail" placeholder="Email" :label="Email" />
+                <va-input v-model="studentEmail" type="studentEmail" placeholder="Email" />
               </div>
 
               <div class="flex md6 xs12">
-                <va-input v-model="contact_number" placeholder="Contact Number" />
+                <va-input v-model="studentContact" placeholder="Contact Number" />
               </div>
 
               <div class="flex md6 xs12">
-                <va-input v-model="id_number" placeholder="Id Number" />
+                <va-input v-model="studentNumber" placeholder="Id Number" />
               </div>
 
               <div class="flex md6 xs12">
@@ -37,7 +32,7 @@
             </div>
 
             <div class="d-flex justify--center mt-3">
-              <va-button type="submit" class="my-0">Submit</va-button>
+              <va-button type="submit" class="my-0" @click="launchToastStudent">Submit</va-button>
             </div>
           </form>
         </va-card>
@@ -45,23 +40,23 @@
 
       <div class="flex xs12">
         <va-card :title="$t('Add New Account (Professor)')">
-          <form>
+          <form @submit.prevent="registerProf">
             <div class="row">
               <div class="flex md6 xs12">
-                <va-input v-model="simple" placeholder="Name" />
+                <va-input v-model="profName" placeholder="Name" />
               </div>
 
               <div class="flex md6 xs12">
-                <va-input v-model="simple" placeholder="Email" />
+                <va-input v-model="profEmail" placeholder="Email" />
               </div>
 
               <div class="flex md6 xs12">
-                <va-input v-model="simple" placeholder="Contact Number" />
+                <va-input v-model="profContact" placeholder="Contact Number" />
               </div>
             </div>
 
             <div class="d-flex justify--center mt-3">
-              <va-button type="submit" class="my-0">Submit</va-button>
+              <va-button type="submit" class="my-0" @click="launchToast">Submit</va-button>
             </div>
           </form>
         </va-card>
@@ -78,39 +73,27 @@ export default {
   data () {
     return {
       simpleOptions: [
-        {
-          id: 1,
-          description: 'Civil Engineering (BSCE)',
-        },
-        {
-          id: 2,
-          description: 'Computer Engineering (BSCpE)',
-        },
-        {
-          id: 3,
-          description: 'Marine Engineering (BSMArE)',
-        },
-        {
-          id: 4,
-          description: 'Marine Transportation (BSMT)',
-        },
-        {
-          id: 5,
-          description: 'Computer Science (BSCS)',
-        },
-        {
-          id: 6,
-          description: 'Information Technology (BSIT)',
-        },
-        {
-          id: 7,
-          description: 'Information System (BSIS)',
-        },
+        'Civil Engineering (BSCE)',
+        'Computer Engineering (BSCpE)',
+        'Marine Engineering (BSMArE)',
+        'Marine Transportation (BSMT)',
+        'Computer Science (BSCS)',
+        'Information Technology (BSIT)',
+        'Information System (BSIS)',
       ],
+      toastTextStudent: 'Student register successfully.!',
+      toastTextProf: 'Student register successfully.!',
+      toastDuration: 2500,
+      toastIcon: 'fa-star-o',
+      toastPosition: 'bottom-right',
+      isToastFullWidth: false,
       studentEmail: '',
       studentName: '',
       studentContact: '',
       studentNumber: '',
+      profName: '',
+      profContact: '',
+      profEmail: '',
       simpleSelectModel: '',
       studentEmailErrors: [],
       studentNameErrors: [],
@@ -139,6 +122,50 @@ export default {
         .collection('Users')
         .doc(this.studentEmail)
         .set(data)
+    },
+
+    async registerProf () {
+      const data = {
+        course: '',
+        email: this.profEmail,
+        id: '',
+        mobileNo: this.profContact,
+        name: this.profContact,
+        register: true,
+        status: 'Present',
+        token: '',
+        type: 1,
+      }
+
+      await firebaseInstance.firebase
+        .firestore()
+        .collection('Users')
+        .doc(this.studentEmail)
+        .set(data)
+    },
+
+    launchToast () {
+      this.showToast(
+        this.toastTextStudent,
+        {
+          icon: this.toastIcon,
+          position: this.toastPosition,
+          duration: this.toastDuration,
+          fullWidth: this.isToastFullWidth,
+        },
+      )
+    },
+
+    launchToastStudent () {
+      this.showToast(
+        this.toastTextProf,
+        {
+          icon: this.toastIcon,
+          position: this.toastPosition,
+          duration: this.toastDuration,
+          fullWidth: this.isToastFullWidth,
+        },
+      )
     },
   },
 }
