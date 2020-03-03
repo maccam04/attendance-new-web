@@ -3,22 +3,53 @@
     <div class="row">
       <div class="flex xs12">
         <va-card :title="$t('Add New Account (Student)')">
-          <form @submit.prevent="registerStudent">
+          <form @submit.prevent="onStudentSubmit">
             <div class="row">
               <div class="flex md6 xs12">
-                <va-input v-model="studentName" type="studentName" placeholder="Full Name" />
+                <va-input
+                  v-model="studentName"
+                  type="studentName"
+                  placeholder="Full Name"
+                  :error="!!nameErrors.length"
+                  :error-messages="nameErrors"
+                />
               </div>
 
               <div class="flex md6 xs12">
-                <va-input v-model="studentEmail" type="studentEmail" placeholder="Email" />
+                <va-input
+                  v-model="studentEmail"
+                  type="email"
+                  placeholder="Email"
+                  :error="!!emailErrors.length"
+                  :error-messages="emailErrors"
+                />
               </div>
 
               <div class="flex md6 xs12">
-                <va-input v-model="studentContact" placeholder="Contact Number" />
+                <va-input
+                  v-model="studentContact"
+                  label="Contact Number"
+                  type="number"
+                  placeholder="0916 XXXX XXX"
+                  @keydown="filterKey"
+                  @input="filterInput"
+                  :maxlength="maxlength"
+                  :error="!!contactErrors.length"
+                  :error-messages="contactErrors"
+                />
               </div>
 
               <div class="flex md6 xs12">
-                <va-input v-model="studentNumber" placeholder="Id Number" />
+                <va-input
+                  v-model="studentNumber"
+                  type="number"
+                  placeholder="Student Number"
+                  @keydown="filterKey"
+                  @input="filterInput"
+                  :maxlength="maxlength"
+                  :error="!!studentIdErrors.length"
+                  :error-messages="studentIdErrors"
+                />
               </div>
 
               <div class="flex md6 xs12">
@@ -27,12 +58,14 @@
                   v-model="simpleSelectModel"
                   textBy="description"
                   :options="simpleOptions"
+                  :error="!!courseErrors.length"
+                  :error-messages="courseErrors"
                 />
               </div>
             </div>
 
             <div class="d-flex justify--center mt-3">
-              <va-button type="submit" class="my-0" @click="launchToastStudent">Submit</va-button>
+              <va-button type="submit" class="my-0">Submit</va-button>
             </div>
           </form>
         </va-card>
@@ -40,23 +73,44 @@
 
       <div class="flex xs12">
         <va-card :title="$t('Add New Account (Professor)')">
-          <form @submit.prevent="registerProf">
+          <form @submit.prevent="onProfSubmit">
             <div class="row">
               <div class="flex md6 xs12">
-                <va-input v-model="profName" placeholder="Name" />
+                <va-input
+                  v-model="profName"
+                  placeholder="Name"
+                  :error="!!profNameErrors.length"
+                  :error-messages="profNameErrors"
+                />
               </div>
 
               <div class="flex md6 xs12">
-                <va-input v-model="profEmail" placeholder="Email" />
+                <va-input
+                  v-model="profEmail"
+                  type="email"
+                  placeholder="Email"
+                  :error="!!profEmailErrors.length"
+                  :error-messages="profEmailErrors"
+                />
               </div>
 
               <div class="flex md6 xs12">
-                <va-input v-model="profContact" placeholder="Contact Number" />
+                <va-input
+                  v-model="profContact"
+                  type="number"
+                  label="Contact Number"
+                  @keydown="filterKey"
+                  @input="filterInput"
+                  :maxlength="maxlength"
+                  placeholder="0916 XXXX XXX"
+                  :error="!!profContactErrors.length"
+                  :error-messages="profContactErrors"
+                />
               </div>
             </div>
 
             <div class="d-flex justify--center mt-3">
-              <va-button type="submit" class="my-0" @click="launchToast">Submit</va-button>
+              <va-button type="submit" class="my-0">Submit</va-button>
             </div>
           </form>
         </va-card>
@@ -81,8 +135,8 @@ export default {
         'Information Technology (BSIT)',
         'Information System (BSIS)',
       ],
-      toastTextStudent: 'Student register successfully.!',
-      toastTextProf: 'Student register successfully.!',
+      toastTextStudent: 'Student registered successfully!',
+      toastTextProf: 'Professor registered successfully!',
       toastDuration: 2500,
       toastIcon: 'fa-star-o',
       toastPosition: 'bottom-right',
@@ -95,13 +149,154 @@ export default {
       profContact: '',
       profEmail: '',
       simpleSelectModel: '',
-      studentEmailErrors: [],
-      studentNameErrors: [],
+      emailErrors: [],
+      nameErrors: [],
+      contactErrors: [],
+      profEmailErrors: [],
+      profNameErrors: [],
+      profContactErrors: [],
+      courseErrors: [],
+      studentIdErrors: [],
+      messages: ['The number should be this format Ex: 0916 XXXX XXX.'],
+      maxlength: 11,
+      idLength: 10,
     }
+  },
+  computed: {
+    studentFormReady () {
+      return (
+        !this.emailErrors.length &&
+        !this.nameErrors.length &&
+        !this.contactErrors.length &&
+        !this.courseErrors.length &&
+        !this.studentIdErrors
+      )
+    },
+    profFormReady () {
+      return (
+        !this.profEmailErrors.length &&
+        !this.profNameErrors.length &&
+        !this.profContactErrors.length
+      )
+    },
   },
   methods: {
     clear (field) {
       this[field] = ''
+    },
+
+    filterKey (e) {
+      const key = e.key
+
+      // If is '.' key, stop it
+      if (key === '.') return e.preventDefault()
+
+      // OPTIONAL
+      // If is 'e' key, stop it
+      if (key === 'e') return e.preventDefault()
+    },
+
+    // This can also prevent copy + paste invalid character
+    filterInput (e) {
+      e.target.value = e.target.value.replace(/[^0-9]+/g, '')
+    },
+
+    launchToastStudent () {
+      this.showToast(this.toastTextStudent, {
+        icon: this.toastIcon,
+        position: this.toastPosition,
+        duration: this.toastDuration,
+        fullWidth: this.isToastFullWidth,
+      })
+    },
+
+    launchToastProf () {
+      this.showToast(this.toastTextProf, {
+        icon: this.toastIcon,
+        position: this.toastPosition,
+        duration: this.toastDuration,
+        fullWidth: this.isToastFullWidth,
+      })
+    },
+
+    onStudentSubmit () {
+      this.emailErrors = this.studentEmail ? [] : ['Email is required']
+      this.nameErrors = this.studentName ? [] : ['Name is required']
+      this.contactErrors = this.studentContact
+        ? []
+        : ['Contact Number is required']
+      this.courseErrors = this.simpleSelectModel
+        ? []
+        : ['Course/Degree is required']
+      this.studentIdErrors = this.studentNumber
+        ? []
+        : ['Student Number is required']
+
+      if (!this.studentFormReady) {
+        return
+      }
+
+      const data = {
+        course: this.simpleSelectModel,
+        email: this.studentEmail,
+        id: this.studentNumber,
+        mobileNo: this.studentContact,
+        name: this.studentName,
+        register: true,
+        status: 'Present',
+        token: '',
+        type: 0,
+      }
+
+      firebaseInstance.firebase
+        .firestore()
+        .collection('Users')
+        .doc(this.studentEmail)
+        .set(data)
+
+      this.showToast(this.toastTextStudent, {
+        icon: this.toastIcon,
+        position: this.toastPosition,
+        duration: this.toastDuration,
+        fullWidth: this.isToastFullWidth,
+      })
+    },
+
+    onProfSubmit () {
+      this.profEmailErrors = this.profEmail ? [] : ['Email is required']
+      this.profNameErrors = this.profName ? [] : ['Name is required']
+      this.profContactErrors = this.profContact
+        ? []
+        : ['Contact Number is required']
+
+      if (!this.profFormReady) {
+        return
+      }
+
+      const data = {
+        course: '',
+        email: this.profEmail,
+        id: '',
+        mobileNo: this.profContact,
+        name: this.profName,
+        register: true,
+        status: 'Present',
+        token: '',
+        type: 1,
+      }
+
+      firebaseInstance.firebase
+        .firestore()
+        .collection('Users')
+        .doc(this.profEmail)
+        .set(data)
+
+      this.showToast(this.toastTextProf, {
+        icon: this.toastIcon,
+        position: this.toastPosition,
+        duration: this.toastDuration,
+        fullWidth: this.isToastFullWidth,
+      })
     },
 
     async registerStudent () {
@@ -130,7 +325,7 @@ export default {
         email: this.profEmail,
         id: '',
         mobileNo: this.profContact,
-        name: this.profContact,
+        name: this.profName,
         register: true,
         status: 'Present',
         token: '',
@@ -140,32 +335,8 @@ export default {
       await firebaseInstance.firebase
         .firestore()
         .collection('Users')
-        .doc(this.studentEmail)
+        .doc(this.profEmail)
         .set(data)
-    },
-
-    launchToast () {
-      this.showToast(
-        this.toastTextStudent,
-        {
-          icon: this.toastIcon,
-          position: this.toastPosition,
-          duration: this.toastDuration,
-          fullWidth: this.isToastFullWidth,
-        },
-      )
-    },
-
-    launchToastStudent () {
-      this.showToast(
-        this.toastTextProf,
-        {
-          icon: this.toastIcon,
-          position: this.toastPosition,
-          duration: this.toastDuration,
-          fullWidth: this.isToastFullWidth,
-        },
-      )
     },
   },
 }
@@ -174,5 +345,17 @@ export default {
 <style>
 .row.row-inside {
   max-width: none;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
 }
 </style>

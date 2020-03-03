@@ -6,13 +6,13 @@
       </template>
 
       <template slot="actions" slot-scope="props">
-        <va-button
+        <!-- <va-button
           flat
           small
           color="gray"
           @click="edit(props.rowData)"
           class="ma-0"
-        >{{ $t('tables.edit') }}</va-button>
+        >{{ $t('tables.edit') }}</va-button> -->
 
         <va-button
           flat
@@ -43,6 +43,7 @@ export default {
       .collection('Users')
       .where('type', '==', 0)
       .onSnapshot(querySnapshot => {
+        this.users = []
         querySnapshot.forEach(doc => {
           console.log(doc.data())
           this.users.push(doc.data())
@@ -87,11 +88,17 @@ export default {
   },
   methods: {
     edit (user) {
-      alert('Edit User: ' + JSON.stringify(user))
+      // alert('Edit User: ' + JSON.stringify(user))
     },
-    remove (user) {
+    async remove (user) {
       const idx = this.users.findIndex(u => u.id === user.id)
       this.users.splice(idx, 1)
+
+      await firebaseInstance.firebase
+        .firestore()
+        .collection('Users')
+        .doc(user.email)
+        .delete()
     },
   },
 }

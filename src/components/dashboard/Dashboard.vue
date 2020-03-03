@@ -2,14 +2,22 @@
   <div class="grid row">
     <div class="flex xs12">
       <va-card title="Rooms">
-        <div>
-          <ul>
-            <li
+        <div class="row">
+          <div class="flex md12">
+            <!-- <ul>
+              <li
+                v-for="(item, index) in rooms"
+                v-bind:key="index"
+                v-on:click="selectedRoom(item)"
+              >{{ item.id }}</li>
+            </ul>-->
+            <va-button
+              color="success"
               v-for="(item, index) in rooms"
               v-bind:key="index"
               v-on:click="selectedRoom(item)"
-            >{{ item.id }}</li>
-          </ul>
+            >{{ item.id }}</va-button>
+          </div>
         </div>
       </va-card>
     </div>

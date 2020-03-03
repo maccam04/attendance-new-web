@@ -28,9 +28,6 @@
           <span class="link">{{ $t('auth.termsOfUse') }}</span>
         </template>
       </va-checkbox>
-      <router-link class="ml-1 link" :to="{name: 'recover-password'}">
-        {{$t('auth.recover_password')}}
-      </router-link>
     </div>
 
     <div class="d-flex justify--center mt-3">
@@ -40,11 +37,13 @@
 </template>
 
 <script>
+import { firebaseInstance } from '../../../app/store.js'
+
 export default {
   name: 'signup',
   data () {
     return {
-      email: '',
+      c: '',
       password: '',
       agreedToTerms: false,
       emailErrors: [],
@@ -56,16 +55,34 @@ export default {
     onsubmit () {
       this.emailErrors = this.email ? [] : ['Email is required']
       this.passwordErrors = this.password ? [] : ['Password is required']
-      this.agreedToTermsErrors = this.agreedToTerms ? [] : ['You must agree to the terms of use to continue']
+      this.agreedToTermsErrors = this.agreedToTerms
+        ? []
+        : ['You must agree to the terms of use to continue']
       if (!this.formReady) {
         return
       }
+
+      const data = {
+        email: this.email,
+        password: this.password,
+      }
+
+      firebaseInstance.firebase
+        .firestore()
+        .collection('Admin')
+        .doc(this.email)
+        .set(data)
+
       this.$router.push({ name: 'dashboard' })
     },
   },
   computed: {
     formReady () {
-      return !(this.emailErrors.length || this.passwordErrors.length || this.agreedToTermsErrors.length)
+      return !(
+        this.emailErrors.length ||
+        this.passwordErrors.length ||
+        this.agreedToTermsErrors.length
+      )
     },
   },
 }
