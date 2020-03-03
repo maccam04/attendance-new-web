@@ -73,7 +73,7 @@ export default {
         .doc(this.email)
         .set(data)
 
-      this.$router.push({ name: 'dashboard' })
+    //  this.$router.push({ name: 'dashboard' })
     },
   },
   computed: {

@@ -17,7 +17,7 @@
     />
 
     <div class="auth-layout__options d-flex align--center justify--space-between">
-      <va-checkbox v-model="keepLoggedIn" class="mb-0" :label="$t('auth.keep_logged_in')"/>
+      <va-checkbox v-model="keepLoggedIn" class="mb-0" :label="$t('auth.keep_logged_in')" />
     </div>
 
     <div class="d-flex justify--center mt-3">
@@ -27,6 +27,8 @@
 </template>
 
 <script>
+import { firebaseInstance } from '../../../app/store.js'
+
 export default {
   name: 'login',
   data () {
@@ -36,6 +38,7 @@ export default {
       keepLoggedIn: false,
       emailErrors: [],
       passwordErrors: [],
+      toastText: 'No account found.',
     }
   },
   computed: {
@@ -50,7 +53,25 @@ export default {
       if (!this.formReady) {
         return
       }
-      this.$router.push({ name: 'dashboard' })
+
+      firebaseInstance.firebase
+        .firestore()
+        .collection('Admin')
+        .where('email', '==', this.email)
+        .where('password', '==', this.password)
+        .get()
+        .then(snapshot => {
+          if (snapshot.empty) {
+            this.showToast(this.toastText, {
+              icon: this.toastIcon,
+              position: this.toastPosition,
+              duration: this.toastDuration,
+              fullWidth: this.isToastFullWidth,
+            })
+          } else {
+            this.$router.push({ name: 'dashboard' })
+          }
+        })
     },
   },
 }
