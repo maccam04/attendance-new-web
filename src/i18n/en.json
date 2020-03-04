@@ -450,8 +450,7 @@
   },
   "user": {
     "language": "Change Language",
-    "logout": "Logout",
-    "profile": "My Profile"
+    "logout": "Logout"
   },
   "treeView": {
     "basic": "Basic",

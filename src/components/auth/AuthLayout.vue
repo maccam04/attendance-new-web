@@ -2,25 +2,26 @@
   <div class="auth-layout row align-content--center">
     <div class="flex xs12 pa-3 flex-center">
       <router-link class="py-5 flex-center" to="/">
-        <va-icon-vuestic />
+        <div class="app-navbar__center lg5 md4">
+          <div class="container portrait">
+            <img :src="image" />
+          </div>
+        </div>
       </router-link>
     </div>
 
     <div class="flex xs12 pa-3">
       <div class="d-flex justify--center">
         <va-card class="auth-layout__card">
-          <va-tabs
-            v-model="tabIndex"
-            center
-          >
+          <va-tabs v-model="tabIndex" center>
             <va-tab>{{ $t('auth.login') }}</va-tab>
             <va-tab>{{ $t('auth.createNewAccount') }}</va-tab>
           </va-tabs>
 
-          <va-separator/>
+          <va-separator />
 
           <div class="pa-3">
-            <router-view/>
+            <router-view />
           </div>
         </va-card>
       </div>
@@ -29,20 +30,18 @@
 </template>
 
 <script>
-import VaIconVuestic from '../../iconset/VaIconVuestic'
 
-const tabs = [
-  'login',
-  'signup',
-]
+import image from '../../assets/icons/logo_transparent.png'
+const tabs = ['login', 'signup']
 
 export default {
   name: 'AuthLayout',
-  components: { VaIconVuestic },
+
   data () {
     return {
       selectedTabIndex: 0,
       tabTitles: ['login', 'createNewAccount'],
+      image: image,
     }
   },
   computed: {
@@ -59,6 +58,24 @@ export default {
 </script>
 
 <style lang="scss">
+
+.container {
+  width: 200px;
+  overflow: hidden;
+}
+
+.container img {
+  display: block;
+}
+
+.portrait img {
+  width: 100%;
+}
+
+.landscape img {
+  height: 100%;
+}
+
 .auth-layout {
   min-height: 100vh;
   background-image: linear-gradient(to right, #0e4ac4, #002c85);
