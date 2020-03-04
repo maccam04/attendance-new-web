@@ -71,6 +71,8 @@ export default {
           } else {
             this.$router.push({ name: 'dashboard' })
           }
+
+          localStorage.setItem('email', this.email)
         })
     },
   },

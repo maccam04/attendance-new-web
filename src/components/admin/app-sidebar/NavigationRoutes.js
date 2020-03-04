@@ -42,5 +42,12 @@ export const navigationRoutes = {
         },
       ],
     },
+    {
+      name: 'timelines',
+      displayName: 'Admin Profile',
+      meta: {
+        iconClass: 'vuestic-iconset vuestic-iconset-ui-elements',
+      },
+    },
   ],
 }
