@@ -43,12 +43,13 @@ export default {
   name: 'signup',
   data () {
     return {
-      c: '',
+      email: '',
       password: '',
       agreedToTerms: false,
       emailErrors: [],
       passwordErrors: [],
       agreedToTermsErrors: [],
+      toastText: 'Admin registered successfully.',
     }
   },
   methods: {
@@ -70,10 +71,32 @@ export default {
       firebaseInstance.firebase
         .firestore()
         .collection('Admin')
-        .doc(this.email)
-        .set(data)
+        .where('email', '==', this.email)
+        .where('password', '==', this.password)
+        .get()
+        .then(snapshot => {
+          if (snapshot.empty) {
+            firebaseInstance.firebase
+              .firestore()
+              .collection('Admin')
+              .doc(this.email)
+              .set(data)
 
-    //  this.$router.push({ name: 'dashboard' })
+            this.showToast(this.toastText, {
+              icon: this.toastIcon,
+              position: this.toastPosition,
+              duration: 2500,
+              fullWidth: this.isToastFullWidth,
+            })
+          } else {
+            this.showToast('Your email is already registered!', {
+              icon: this.toastIcon,
+              position: this.toastPosition,
+              duration: 2500,
+              fullWidth: this.isToastFullWidth,
+            })
+          }
+        })
     },
   },
   computed: {

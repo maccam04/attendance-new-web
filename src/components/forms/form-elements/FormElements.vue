@@ -33,7 +33,6 @@
                   placeholder="0916 XXXX XXX"
                   @keydown="filterKey"
                   @input="filterInput"
-                  :maxlength="maxlength"
                   :error="!!contactErrors.length"
                   :error-messages="contactErrors"
                 />
@@ -46,7 +45,6 @@
                   placeholder="Student Number"
                   @keydown="filterKey"
                   @input="filterInput"
-                  :maxlength="maxlength"
                   :error="!!studentIdErrors.length"
                   :error-messages="studentIdErrors"
                 />
@@ -169,7 +167,7 @@ export default {
         !this.nameErrors.length &&
         !this.contactErrors.length &&
         !this.courseErrors.length &&
-        !this.studentIdErrors
+        !this.studentIdErrors.length
       )
     },
     profFormReady () {
@@ -181,8 +179,15 @@ export default {
     },
   },
   methods: {
-    clear (field) {
-      this[field] = ''
+    clear () {
+      this.studentEmail = ''
+      this.studentName = ''
+      this.studentContact = ''
+      this.studentNumber = ''
+      this.profName = ''
+      this.profContact = ''
+      this.profEmail = ''
+      this.simpleSelectModel = ''
     },
 
     filterKey (e) {
@@ -205,7 +210,7 @@ export default {
       this.showToast(this.toastTextStudent, {
         icon: this.toastIcon,
         position: this.toastPosition,
-        duration: this.toastDuration,
+        duration: 2500,
         fullWidth: this.isToastFullWidth,
       })
     },
@@ -214,12 +219,13 @@ export default {
       this.showToast(this.toastTextProf, {
         icon: this.toastIcon,
         position: this.toastPosition,
-        duration: this.toastDuration,
+        duration: 2500,
         fullWidth: this.isToastFullWidth,
       })
     },
 
     onStudentSubmit () {
+      console.log('onStudentSubmit')
       this.emailErrors = this.studentEmail ? [] : ['Email is required']
       this.nameErrors = this.studentName ? [] : ['Name is required']
       this.contactErrors = this.studentContact
@@ -233,33 +239,11 @@ export default {
         : ['Student Number is required']
 
       if (!this.studentFormReady) {
+        console.log('not valid')
         return
       }
 
-      const data = {
-        course: this.simpleSelectModel,
-        email: this.studentEmail,
-        id: this.studentNumber,
-        mobileNo: this.studentContact,
-        name: this.studentName,
-        register: true,
-        status: 'Present',
-        token: '',
-        type: 0,
-      }
-
-      firebaseInstance.firebase
-        .firestore()
-        .collection('Users')
-        .doc(this.studentEmail)
-        .set(data)
-
-      this.showToast(this.toastTextStudent, {
-        icon: this.toastIcon,
-        position: this.toastPosition,
-        duration: this.toastDuration,
-        fullWidth: this.isToastFullWidth,
-      })
+      this.registerStudent()
     },
 
     onProfSubmit () {
@@ -270,33 +254,8 @@ export default {
         : ['Contact Number is required']
 
       if (!this.profFormReady) {
-        return
+
       }
-
-      const data = {
-        course: '',
-        email: this.profEmail,
-        id: '',
-        mobileNo: this.profContact,
-        name: this.profName,
-        register: true,
-        status: 'Present',
-        token: '',
-        type: 1,
-      }
-
-      firebaseInstance.firebase
-        .firestore()
-        .collection('Users')
-        .doc(this.profEmail)
-        .set(data)
-
-      this.showToast(this.toastTextProf, {
-        icon: this.toastIcon,
-        position: this.toastPosition,
-        duration: this.toastDuration,
-        fullWidth: this.isToastFullWidth,
-      })
     },
 
     async registerStudent () {
@@ -315,8 +274,29 @@ export default {
       await firebaseInstance.firebase
         .firestore()
         .collection('Users')
-        .doc(this.studentEmail)
-        .set(data)
+        .where('email', '==', this.studentEmail)
+        .get()
+        .then(snapshot => {
+          if (snapshot.empty) {
+            firebaseInstance.firebase
+              .firestore()
+              .collection('Users')
+              .doc(this.studentEmail)
+              .set(data)
+
+            this.launchToastStudent()
+            this.clear()
+          } else {
+            this.showToast(
+              'The email is already registered! Use another email for registration.',
+              {
+                position: this.toastPosition,
+                duration: 2500,
+                fullWidth: this.isToastFullWidth,
+              },
+            )
+          }
+        })
     },
 
     async registerProf () {
@@ -335,8 +315,29 @@ export default {
       await firebaseInstance.firebase
         .firestore()
         .collection('Users')
-        .doc(this.profEmail)
-        .set(data)
+        .where('email', '==', this.profEmail)
+        .get()
+        .then(snapshot => {
+          if (snapshot.empty) {
+            firebaseInstance.firebase
+              .firestore()
+              .collection('Users')
+              .doc(this.profEmail)
+              .set(data)
+
+            this.launchToastProf()
+            this.clear()
+          } else {
+            this.showToast(
+              'The email is already registered! Use another email for registration.',
+              {
+                position: this.toastPosition,
+                duration: 2500,
+                fullWidth: this.isToastFullWidth,
+              },
+            )
+          }
+        })
     },
   },
 }

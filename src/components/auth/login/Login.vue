@@ -65,7 +65,7 @@ export default {
             this.showToast(this.toastText, {
               icon: this.toastIcon,
               position: this.toastPosition,
-              duration: this.toastDuration,
+              duration: 2500,
               fullWidth: this.isToastFullWidth,
             })
           } else {
