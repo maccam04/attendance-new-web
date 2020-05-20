@@ -107,7 +107,7 @@ export default {
       this.showToast(this.toastText, {
         icon: this.toastIcon,
         position: this.toastPosition,
-        duration: this.toastDuration,
+        duration: 1000,
         fullWidth: this.isToastFullWidth,
       })
     },

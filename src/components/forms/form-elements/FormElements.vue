@@ -254,8 +254,11 @@ export default {
         : ['Contact Number is required']
 
       if (!this.profFormReady) {
-
+        console.log('not valid')
+        return
       }
+
+      this.registerProf()
     },
 
     async registerStudent () {
